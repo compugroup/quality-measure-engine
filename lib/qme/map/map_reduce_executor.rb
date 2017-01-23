@@ -127,9 +127,7 @@ module QME
           QME::QualityReport::EXCLUSIONS => {"$sum" => "$value.#{QME::QualityReport::EXCLUSIONS}"},
           QME::QualityReport::EXCEPTIONS => {"$sum" => "$value.#{QME::QualityReport::EXCEPTIONS}"},
           QME::QualityReport::MSRPOPL => {"$sum" => "$value.#{QME::QualityReport::MSRPOPL}"},
-          QME::QualityReport::CONSIDERED => {"$sum" => 1},
-          {'allowDiskUse' => true}
-        }}
+          QME::QualityReport::CONSIDERED => {"$sum" => 1},{'allowDiskUse' => true}}}
 
         aggregate = get_db.command(:aggregate => 'patient_cache', :pipeline => pipeline)
         if aggregate['ok'] != 1
