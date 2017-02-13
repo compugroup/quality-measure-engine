@@ -129,7 +129,7 @@ module QME
           QME::QualityReport::MSRPOPL => {"$sum" => "$value.#{QME::QualityReport::MSRPOPL}"},
           QME::QualityReport::CONSIDERED => {"$sum" => 1},'allowDiskUse' => true}}
 
-        aggregate = get_db.command(:aggregate => 'patient_cache', :pipeline => pipeline,allowDiskUse:true)
+        aggregate = get_db.command(:aggregate => 'patient_cache', :pipeline => pipeline, :allowDiskUse => true)
         if aggregate['ok'] != 1
           raise RuntimeError, "Aggregation Failed"
         elsif aggregate['result'].size !=1
@@ -177,7 +177,7 @@ module QME
         cv_pipeline << {'$unwind' => '$value.values'}
         cv_pipeline << {'$group' => {'_id' => '$value.values', 'count' => {'$sum' => 1}}}
 
-        aggregate = get_db.command(:aggregate => 'patient_cache', :pipeline => cv_pipeline,allowDiskUse:true)
+        aggregate = get_db.command(:aggregate => 'patient_cache', :pipeline => cv_pipeline, :allowDiskUse => true)
 
         raise RuntimeError, "Aggregation Failed" if aggregate['ok'] != 1
 
@@ -199,7 +199,7 @@ module QME
                          :reduce => "function(key, values){return values;}",
                          :out => {:reduce => 'patient_cache', :sharded => true},
                          :finalize => measure.finalize_function,
-                         :query => prefilter,allowDiskUse:true)
+                         :query => prefilter, :allowDiskUse => true)
         QME::ManualExclusion.apply_manual_exclusions(@measure_id,@sub_id)
       end
 
@@ -213,7 +213,7 @@ module QME
                          :reduce => "function(key, values){return values;}",
                          :out => {:reduce => 'patient_cache', :sharded => true},
                          :finalize => measure.finalize_function,
-                         :query => {:medical_record_number => patient_id, :test_id => @parameter_values["test_id"]},allowDiskUse:true)
+                         :query => {:medical_record_number => patient_id, :test_id => @parameter_values["test_id"]}, :allowDiskUse => true)
         QME::ManualExclusion.apply_manual_exclusions(@measure_id,@sub_id)
 
       end
@@ -228,7 +228,7 @@ module QME
                                   :reduce => "function(key, values){return values;}",
                                   :out => {:inline => true},
                                   :raw => true,
-                                  :query => {:medical_record_number => patient_id, :test_id => @parameter_values["test_id"]},allowDiskUse:true)
+                                  :query => {:medical_record_number => patient_id, :test_id => @parameter_values["test_id"]}, :allowDiskUse => true)
 
         raise result['err'] if result['ok']!=1
         result['results'][0]['value']
